@@ -196,6 +196,32 @@ comments: {
 2. 仓库 **Settings → Pages → Source** 选择 **GitHub Actions**。
 3. push 到 `main`，`Deploy to GitHub Pages` 工作流会构建并发布。
 
+### 手动发布：`npm run release`
+
+CI 里的门禁只有在 push 之后才跑，失败要等几分钟才知道。`scripts/release.mjs` 把同一组门禁
+先在本地跑一遍，过了才提交推送：
+
+```bash
+npm run release                    # 门禁 + 构建 + 提交 + 推送，提交信息交互输入
+npm run release -- -m "新增文章"    # 指定提交信息
+npm run release -- --dry-run       # 只跑门禁与构建，不提交不推送
+npm run release -- --skip-gates    # 跳过门禁（CI 仍会再拦一次）
+npm run release -- --no-push       # 提交但不推送
+```
+
+它做四件事：跑 `verify:theme` / `audit` / `test:wechat` / `check` 四道门禁；用线上同样的
+`SITE_URL` 与 `BASE_PATH` 本地构建一次，确认 base 拼接正确；列出待发布文件并对比远端；
+提交后推送，触发工作流。
+
+两个细节值得说明。一是它会在推送前 `fetch` 并检查是否落后远端，落后就先 `rebase`，
+因为 `deploy.yml` 有一道守卫要求本次运行的提交就是 `main` 的最新提交，落后会被拦下。
+二是首次使用前需要配置 git 身份，否则提交会失败：
+
+```bash
+git config --global user.name "你的名字"
+git config --global user.email "你的邮箱"
+```
+
 **线上地址由仓库名决定，改代码改不了它：**
 
 | 仓库名 | Pages 地址 | `site.base` |
@@ -238,6 +264,7 @@ CI 里 `actions/configure-pages` 会把 Pages 实际使用的地址注入 `SITE_
 | `npm run test:wechat` | 公众号导出运行时回归测试（18 项断言） |
 | `npm run check` | Astro/TS 类型检查 |
 | `npm run audit` | 设计规范自检（对比度 / 文案 / 结构共 55 项，接 CI 可当门禁） |
+| `npm run release` | 手动发布：门禁 + 构建 + 提交 + 推送（`--dry-run` 只检查不发） |
 | `npm run preview` | 预览 `dist/` |
 
 ---

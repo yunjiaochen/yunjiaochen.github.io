@@ -16,7 +16,8 @@
     "test:wechat": "node scripts/wechat-smoke-test.mjs",
     "build:clean": "rm -rf .astro dist node_modules/.astro && npm run build",
     "audit": "node scripts/taste-audit.mjs",
-    "verify:theme": "node scripts/verify-theme.mjs"
+    "verify:theme": "node scripts/verify-theme.mjs",
+    "release": "node scripts/release.mjs"
   },
   "dependencies": {
     "@astrojs/markdown-satteri": "^0.4.1",
