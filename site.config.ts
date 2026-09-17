@@ -65,7 +65,7 @@ export const siteConfig = {
     description:
       '一个算法工程师的个人博客：信贷模型、大数据、NLP 与推荐算法的实践笔记，也写读书笔记。用 Markdown 写作。',
     /** 生产地址（不带结尾斜杠）。用户站点（仓库名 <user>.github.io）填 https://<user>.github.io */
-    url: env('SITE_URL', 'https://yunjiao-chen.github.io'),
+    url: env('SITE_URL', 'https://yunjiaochen.github.io'),
     /**
      * 部署子路径，决定所有内链与资源的路径前缀：
      *   仓库名 <user>.github.io（用户站点）或绑定自定义域名 → 填 '/'（目标状态）
@@ -114,7 +114,7 @@ export const siteConfig = {
     /** 研究方向：关于页侧栏展示 */
     focus: ['信贷模型', '大数据', 'NLP', '推荐算法'],
     socials: [
-      { label: 'GitHub', href: 'https://github.com/YunJiao-Chen', icon: 'github' },
+      { label: 'GitHub', href: 'https://github.com/yunjiaochen', icon: 'github' },
       { label: '邮箱', href: 'mailto:yjchen@example.com', icon: 'mail' },
       { label: 'RSS', href: '/rss.xml', icon: 'rss' },
     ] as SocialLink[],
@@ -191,7 +191,7 @@ export const siteConfig = {
        * 当前仓库的 owner/name。改仓库名后必须同步这里。
        * repoId 是仓库的数字 ID（改名不变），giscus 靠它认仓库，所以历史评论不会丢。
        */
-      repo: 'YunJiao-Chen/YunJiao-Chen.github.io',
+      repo: 'yunjiaochen/yunjiaochen.github.io',
       /** 仓库 node_id，已从 GitHub API 取得 */
       repoId: 'R_kgDOUY1RCA',
       category: 'Announcements',

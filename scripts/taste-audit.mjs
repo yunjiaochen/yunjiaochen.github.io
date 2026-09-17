@@ -443,6 +443,34 @@ function auditStructure() {
       titleMismatch.slice(0, 3).join('; '),
     );
 
+    // giscus 的仓库名必须与 git origin 指向的仓库一致
+    // （改过用户名或仓库名后最容易漏；症状是评论区报
+    //   "giscus is not installed on this repository"）
+    // 优先用 CI 提供的 GITHUB_REPOSITORY（权威且不受本地 remote 遗忘影响），
+    // 本地退回 git remote。注意：本地 remote 也可能忘了跟着改仓库名，
+    // 那种情况两边一起过期、这条就查不出来，所以真正兜底的是 CI 这一次。
+    const gitConfigPath = join(root, '.git/config');
+    const originUrl = existsSync(gitConfigPath)
+      ? (/\[remote "origin"\][\s\S]*?url\s*=\s*(\S+)/.exec(readFileSync(gitConfigPath, 'utf8'))?.[1] ?? '')
+      : '';
+    const gitSlug = originUrl.replace(/\.git$/, '').split(/[:/]/).slice(-2).join('/');
+    const slug = process.env.GITHUB_REPOSITORY || gitSlug;
+    if (slug && existsSync(join(distDir, 'index.html'))) {
+      const declared = [...globSync('**/*.html', { cwd: distDir })]
+        .filter((f) => !f.startsWith('wechat/'))
+        .map((f) => /data-repo="([^"]+)"/.exec(readFileSync(join(distDir, f), 'utf8'))?.[1])
+        .filter(Boolean);
+      const unique = [...new Set(declared)];
+      if (slug && unique.length) {
+        add(
+          'C 结构',
+          `giscus 仓库与 git origin 一致（${slug}）`,
+          unique.length === 1 && unique[0] === slug,
+          `页面里写的是 ${unique.join(', ')}`,
+        );
+      }
+    }
+
     // 站点图标：每条声明都要有 href，而且目标文件得真的在产物里
     // （踩过一次：.ico 用了 .src 拿到 undefined，渲染出没有 href 的 <link>，
     //   浏览器于是继续用旧的缓存图标，看起来就像"图标没换成功"）
